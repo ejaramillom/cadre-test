@@ -2,13 +2,14 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 RUN npm ci
 
-COPY . .
+COPY --chown=node:node . .
 
-RUN addgroup -g 1000 -S nonroot &&     adduser -u 1000 -S nonroot -G nonroot &&     chown -R nonroot:nonroot /app
-USER nonroot:nonroot
+RUN chown node:node /app
+
+USER node
 
 EXPOSE 3000
 
