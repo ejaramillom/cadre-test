@@ -3,19 +3,13 @@
 
 import type { PathKeys } from "./path-keys.js";
 
-// ---------------------------------------------------------------------------
-// Test helpers (zero-runtime)
-// ---------------------------------------------------------------------------
+// Zero-runtime test helpers.
 
 /** True when A and B are mutually assignable (i.e. identical types). */
 type Equals<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 
 /** Causes a compile error if T is not `true`. */
 type Assert<T extends true> = T;
-
-// ---------------------------------------------------------------------------
-// Fixtures
-// ---------------------------------------------------------------------------
 
 type Flat = { id: number; name: string };
 
@@ -40,28 +34,41 @@ type WithOptional = {
   maybe?: number;
 };
 
-// ---------------------------------------------------------------------------
-// Test cases — each line is a compile-time assertion.
-// Uncomment the Assert<…> calls and replace `never` with expected unions once
-// PathKeysHelper is implemented.
-// ---------------------------------------------------------------------------
-
-// TODO: flat object — expect "id" | "name"
+// Flat object
 type _FlatKeys = PathKeys<Flat>;
-// type _AssertFlat = Assert<Equals<_FlatKeys, "id" | "name">>;
+type _AssertFlat = Assert<Equals<_FlatKeys, "id" | "name">>;
 
-// TODO: nested object — expect "user" | "user.id" | "user.address" | "user.address.city" | "user.address.zip" | "active"
+// Nested object
 type _NestedKeys = PathKeys<Nested>;
-// type _AssertNested = Assert<Equals<_NestedKeys, "user" | "user.id" | "user.address" | "user.address.city" | "user.address.zip" | "active">>;
+type _AssertNested = Assert<
+  Equals<
+    _NestedKeys,
+    | "user"
+    | "user.id"
+    | "user.address"
+    | "user.address.city"
+    | "user.address.zip"
+    | "active"
+  >
+>;
 
-// TODO: arrays — numeric indices become path segments ("tags.0", "items.0", "items.0.value")
+// Arrays — indices use `${number}` template segments, not literal 0
 type _ArrayKeys = PathKeys<WithArray>;
-// type _AssertArray = Assert<Equals<_ArrayKeys, /* TODO */ never>>;
+type _AssertArray = Assert<
+  Equals<
+    _ArrayKeys,
+    | "tags"
+    | `tags.${number}`
+    | "items"
+    | `items.${number}`
+    | `items.${number}.value`
+  >
+>;
 
-// TODO: optional props still appear as path segments
+// Optional props still appear as path segments
 type _OptionalKeys = PathKeys<WithOptional>;
-// type _AssertOptional = Assert<Equals<_OptionalKeys, "required" | "maybe">>;
+type _AssertOptional = Assert<Equals<_OptionalKeys, "required" | "maybe">>;
 
-// Smoke check: PathKeys<{}> should be `never`
+// Empty object yields never
 type _EmptyKeys = PathKeys<Record<never, never>>;
-// type _AssertEmpty = Assert<Equals<_EmptyKeys, never>>;
+type _AssertEmpty = Assert<Equals<_EmptyKeys, never>>;

@@ -8,7 +8,10 @@
 // T extends Map<infer K, infer V>        // K, V — key and value (from standard generics)
 // T extends (infer Head)[]               // Head — tuple head element
 
-type DeepReadOnly<T> =
+type DeepReadOnly<
+    T
+
+> =
     T extends (string | number | bigint | boolean | symbol | null | undefined)
         ? T
         : T extends readonly (infer Item)[]
@@ -21,3 +24,26 @@ type DeepReadOnly<T> =
 
 type Pair = [number, { uuid: string }]
 type CheckingThis = DeepReadOnly<Pair>
+
+// VARIANCE & INFER IN CONTRAVARIANT POSITION
+// ──────────────────────────────────────────
+// Covariance (return types / reading):
+//   Dog extends Animal → Dog[] assignable to Animal[]
+//   Same direction. Distributes to union.
+//
+// Contravariance (param types / writing):
+//   Dog extends Animal → Fn<Animal> assignable to Fn<Dog>
+//   Reverse direction. Distributes to intersection.
+//
+// infer in covariant position (return):
+//   T extends () => infer R → union across members
+//
+// infer in contravariant position (param):
+//   T extends (x: infer U) => void → intersection across members
+//   ((a: string) => void) | ((a: number) => void) → string & number → never
+//   ((x: Animal) => void) | ((x: Dog) => void)    → Animal & Dog   → Dog
+//
+// Memory trick:
+//   reading  → covariant  → union
+//   writing  → contravariant → intersection
+
