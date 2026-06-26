@@ -1,16 +1,7 @@
 import { prisma } from "@/bff/db/client"
 import bcrypt from "bcryptjs"
-import { z } from "zod"
-
-const RegisterSchema = z.object({
-  name: z.string().min(2).max(100),
-  email: z.string().email(),
-  password: z
-    .string()
-    .min(8)
-    .regex(/[a-zA-Z]/, "Password must contain at least one letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-})
+import { Prisma } from "@prisma/client"
+import { RegisterSchema } from "@/lib/validators"
 
 export type RegisterResult =
   | { ok: true; userId: string }
@@ -22,7 +13,7 @@ export async function registerUser(input: unknown): Promise<RegisterResult> {
   if (!parsed.success) {
     const fields: Record<string, string> = {}
     for (const issue of parsed.error.issues) {
-      const field = String(issue.path[0])
+      const field = issue.path[0] ? String(issue.path[0]) : "root"
       fields[field] = issue.message
     }
     return { ok: false, error: "Validation failed", fields }
@@ -60,7 +51,11 @@ export async function registerUser(input: unknown): Promise<RegisterResult> {
     })
 
     return { ok: true, userId: user.id }
-  } catch {
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      return { ok: false, error: "Email already registered" }
+    }
+    console.error("registerUser failed", { code: (e as { code?: string })?.code })
     return { ok: false, error: "Registration failed. Please try again." }
   }
 }

@@ -1,5 +1,10 @@
 # CDR-005 — Pulse: Database Schema + Auth Foundation
 
+**Status: ✅ COMPLETE** — 2026-06-26
+PR: https://github.com/ejaramillom/cadre-test/pull/4
+Tests: 4/4 Playwright passing · Screenshots: e2e/screenshots/
+
+
 ## Goal
 Initialize Postgres with a minimal, extensible schema. Wire NextAuth v5 credentials
 provider. Users can sign up and log in. Live on Vercel with Neon DB.
@@ -182,3 +187,7 @@ even when user not found (compare against a dummy hash to burn the same time).
 - Post creation + feed → CDR-006
 - Follow/like/comment → CDR-007
 - FSD full restructure → ongoing
+
+bff/v1/login
+bff/v1/posts
+bff/v1/users
