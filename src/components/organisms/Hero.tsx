@@ -4,8 +4,13 @@ import { Badge } from "@/components/ui/badge"
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-16">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/40 via-black to-black" />
+    <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-16 overflow-hidden">
+      {/* Animated orbs */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="animate-float-slow absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
+        <div className="animate-float-medium absolute -bottom-20 -right-20 w-[400px] h-[400px] rounded-full bg-fuchsia-600/15 blur-[100px]" style={{ animationDelay: "4s" }} />
+        <div className="animate-float-slow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-violet-500/10 blur-[80px]" style={{ animationDelay: "9s" }} />
+      </div>
 
       <Badge variant="outline" className="mb-6 border-violet-500/50 text-violet-300 text-xs tracking-widest uppercase">
         Social Network 1.0
